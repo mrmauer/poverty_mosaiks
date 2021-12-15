@@ -1,4 +1,4 @@
-from .db import DB
+from db import DB
 from config import Config
 import pickle
 
@@ -11,7 +11,7 @@ db = DB(
     port = Config.DATABASE_PORT
 )
 
-with open('data/WORLD_UAR.pkl', 'br') as f:
+with open('../data/WORLD_UAR.pkl', 'br') as f:
     data = pickle.load(f)
 
 db.create_mosaiks_table()

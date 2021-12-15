@@ -41,8 +41,7 @@ class DB:
                         data['X'][i].tolist(),
                     )
                 )
-
-            self.connection.commit()
+                self.connection.commit()
 
     def create_mosaiks_table(self):
         with self.connection.cursor() as cursor:
