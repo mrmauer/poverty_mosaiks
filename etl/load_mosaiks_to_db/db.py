@@ -22,26 +22,45 @@ class DB:
                 ON mosaiks
                 USING GIST (lonlat)
             ;
+        """,
+        "GET_MOSAIKS_IDS" : """
+            SELECT id FROM mosaiks
+            ;
         """
     }
 
     def __init__(self, **config):
         self.connection = pg.connect(**config)
 
+    def get_mosaiks_ids(self):
+        '''
+        Get all moasiks vector ids from database and return in a set
+        '''
+        with self.connection.cursor() as cursor:
+            cursor.execute(self.SQL['GET_MOSAIKS_IDS'])
+            mosaiks_ids = cursor.fetchall()
+
+        return {mosaiks_id for mosaiks_id in mosaiks_ids}
+
     def write_mosaiks_records(self, data):
+        written_ids = self.get_mosaiks_ids()
+
         with self.connection.cursor() as cursor:
 
             for i in range(data['ids_X'].shape[0]):
-                lat, lon = data['latlon'][i]
-                cursor.execute(
-                    self.SQL["WRITE_FEATURE"],
-                    (
-                        data['ids_X'][i],
-                        lon, lat,
-                        data['X'][i].tolist(),
+                if data['ids_X'][i] not in written_ids:
+                    lat, lon = data['latlon'][i]
+                    cursor.execute(
+                        self.SQL["WRITE_FEATURE"],
+                        (
+                            data['ids_X'][i],
+                            lon, lat,
+                            data['X'][i].tolist(),
+                        )
                     )
-                )
-                self.connection.commit()
+                    self.connection.commit()
+                else:
+                    continue
 
     def create_mosaiks_table(self):
         with self.connection.cursor() as cursor:
