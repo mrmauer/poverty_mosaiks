@@ -44,7 +44,7 @@ class DB:
             cursor.execute(self.SQL['MOSAIKS_IN'], (mid,))
             return len(cursor.fetchall()) > 0
 
-        return {mosaiks_id for mosaiks_id in mosaiks_ids}
+        return {mosaiks_id[0] for mosaiks_id in mosaiks_ids}
 
     def write_mosaiks_records(self, data):
 
