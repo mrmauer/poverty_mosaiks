@@ -40,7 +40,7 @@ class DB:
             cursor.execute(self.SQL['GET_MOSAIKS_IDS'])
             mosaiks_ids = cursor.fetchall()
 
-        return {mosaiks_id for mosaiks_id in mosaiks_ids}
+        return {mosaiks_id[0] for mosaiks_id in mosaiks_ids}
 
     def write_mosaiks_records(self, data):
         written_ids = self.get_mosaiks_ids()
