@@ -36,22 +36,24 @@ class DB:
     def __init__(self, **config):
         self.connection = pg.connect(**config)
 
-    def mosaiks_in_db(self, mid):
+    def get_mosaiks_ids(self):
         '''
         Get all moasiks vector ids from database and return in a set
         '''
         with self.connection.cursor() as cursor:
-            cursor.execute(self.SQL['MOSAIKS_IN'], (mid,))
-            return len(cursor.fetchall()) > 0
+            cursor.execute(self.SQL['GET_MOSAIKS_IDS'])
+            mosaiks_ids = cursor.fetchall()
 
         return {mosaiks_id[0] for mosaiks_id in mosaiks_ids}
 
     def write_mosaiks_records(self, data):
 
+        written_ids = self.get_mosaiks_ids()
+
         with self.connection.cursor() as cursor:
 
             for i in range(data['ids_X'].shape[0]):
-                if self.mosaiks_in_db(data['ids_X'][i]):
+                if data['ids_X'][i] not in written_ids:
                     lat, lon = data['latlon'][i]
                     cursor.execute(
                         self.SQL["WRITE_FEATURE"],
