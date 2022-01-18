@@ -30,6 +30,10 @@ class DB:
         "MOSAIKS_IN" : """
             SELECT true FROM mosaiks WHERE id = %s
             ;
+        """,
+        "GET_CLOSEST_FEATURES": """
+            SELECT features FROM mosaiks ORDER BY lonlat <-> point (%s, %s) LIMIT %s
+            ;
         """
     }
 
@@ -79,3 +83,13 @@ class DB:
             cursor.execute(self.SQL["BUILD_RTREE"])
 
         self.connection.commit()
+
+    def get_mosaiks_closest_features(self, lon, lat, n):
+        '''
+        Get features of the n closest points
+        '''
+        with self.connection.cursor() as cursor:
+            cursor.execute(self.SQL['GET_CLOSEST_FEATURES'],(lon,lat,n))
+            mosaiks_features = cursor.fetchall()
+
+        return mosaiks_features
