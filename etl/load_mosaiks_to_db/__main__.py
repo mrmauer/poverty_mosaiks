@@ -2,9 +2,6 @@ from db import DB
 from config import Config
 import pickle
 
-point_lon = -74.013
-pont_lat = 40.711
-n = 1
 
 db = DB(
     dbname = Config.DATABASE_NAME,
@@ -20,7 +17,6 @@ with open('../data/WORLD_UAR.pkl', 'br') as f:
 db.create_mosaiks_table()
 db.write_mosaiks_records(data)
 db.create_geo_index()
-closest_features = db.get_mosaiks_closest_features(point_lon, pont_lat, n)
 db.connection.close()
 
 print("FIN")

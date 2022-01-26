@@ -1,5 +1,4 @@
 import psycopg2 as pg
-import time, sys
 
 class DB:
 
@@ -91,5 +90,10 @@ class DB:
         with self.connection.cursor() as cursor:
             cursor.execute(self.SQL['GET_CLOSEST_FEATURES'],(lon,lat,n))
             mosaiks_features = cursor.fetchall()
+
+        # For some reason features are received as a tuple, where first value is the features array, and the second value is empty
+        # Example = [([features here for a given point],), ([features here for another given point],)]
+        # Lets clean that
+        mosaiks_features = [f[0] for f in mosaiks_features]
 
         return mosaiks_features
