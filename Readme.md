@@ -1,5 +1,15 @@
 ## Setup
 
+### Using API
+
+Example request:
+```
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"n_neighbors":2, "points":[{"lat":10, "lon":10}, {"lat":15, "lon":20}]}' \
+  http://127.0.0.1:5000/mosaiks-features/
+```
+
 ### Accessing psql
 
 Command to psql on AWS: [here](https://harriscapp.slack.com/archives/D012DNQDH45/p1639690455006800)
