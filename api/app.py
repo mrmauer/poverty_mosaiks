@@ -2,9 +2,8 @@ import sys
 from flask import Flask, request, abort
 import json
 
-sys.path.append('..')
-from etl.load_mosaiks_to_db.db import DB
-from etl.load_mosaiks_to_db.config import Config
+from db import DB
+from config import Config
 
 app = Flask(__name__)
 
@@ -21,6 +20,13 @@ def missing_arguments(error):
     return ("Incorrect input. Body must be a dict with unique key 'points'"
             "and value a list of dicts with keys 'lat' and 'lon'", 422)
 
+@app.errorhandler(413)
+def request_too_big(error):
+    return ("Request size is too large. Your request must satisfy the "
+            f"conditions: 'n_neighbors' <= {Config.N_NEIGHBORS_LIMIT} "
+            f"and 'radius' <= {Config.RADIUS_LIMIT} and "
+            f"points.length <= {Config.MAXIMUM_REQUEST_POINTS}.", 413)
+
 def get_and_validate_args():
     '''
     Expected request body:
@@ -36,30 +42,43 @@ def get_and_validate_args():
     if not isinstance(list_points, list):
         abort(422)
 
+    if len(list_points) > Config.MAXIMUM_REQUEST_POINTS:
+        abort(413)
+
     for point in list_points:
         if 'lon' not in point or 'lat' not in point:
             abort(422)
 
     if 'n_neighbors' in request_data:
         n = request_data['n_neighbors']
+        if n > Config.N_NEIGHBORS_LIMIT:
+            abort(413)
     else:
         n = 1
 
-    return list_points, n
+    if 'radius' in request_data:
+        radius = request_data['radius']
+        if radius > Config.RADIUS_LIMIT:
+            abort(413)
+    else:
+        radius = Config.DEFAULT_RADIUS
+
+    return list_points, n, radius
 
 
 @app.route('/mosaiks-features/', methods=['POST'])
 def mosaiks_features():
 
-    list_points, n = get_and_validate_args()
+    list_points, n, radius = get_and_validate_args()
 
-    response = {"n_neighbors":n, "points": []}
+    response = {"n_neighbors": n, "points": []}
     
     for point in list_points:
         closest_features = db.get_mosaiks_closest_features(
             lon=point['lon'],
             lat=point['lat'],
-            n=n)
+            n=n,
+            radius=radius)
         response['points'].append(
             {'point': point,
              'closest_features': closest_features}

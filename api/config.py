@@ -1,0 +1,12 @@
+import os
+
+class Config:
+    DATABASE_NAME = "mosaics"
+    DATABASE_USER = "postgres"
+    DATABASE_PASSWORD = os.getenv("MOSAIKS_DATABASE_PASSWORD")
+    DATABASE_PORT = 5432
+    DATABASE_HOST = os.getenv("MOSAIKS_DATABASE_HOST")
+    N_NEIGHBORS_LIMIT = 50
+    DEFAULT_RADIUS = int(1e4)
+    RADIUS_LIMIT = int(5e4)
+    MAXIMUM_REQUEST_POINTS = 100
