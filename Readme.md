@@ -6,8 +6,8 @@ Example request (on local server):
 ```
 curl --header "Content-Type: application/json" \
   --request POST \
-  --data '{"n_neighbors":2, "radius":10000, points":[{"lat":10, "lon":10}, {"lat":15, "lon":20}]}' \
-  http://127.0.0.1:105/mosaiks-features/
+  --data '{"n_neighbors":2, "radius":10000, "points":[{"lat":10, "lon":10}, {"lat":15, "lon":20}]}' \
+  http://127.0.0.1:5000/mosaiks-features/
 ```
 Limits:
 * `n_neighbors <= 50` (the number of neighbors to return for each mosaiks/point requested)
